@@ -9,13 +9,14 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    // Redirect based on role
     if (role === 'student') {
       return <Navigate to="/student-dashboard" replace />;
     } else if (role === 'recruiter') {
       return <Navigate to="/recruiter-dashboard" replace />;
     } else if (role === 'mentor') {
       return <Navigate to="/mentor-dashboard" replace />;
+    } else if (role === 'admin') {
+      return <Navigate to="/admin-dashboard" replace />;
     }
     return <Navigate to="/" replace />;
   }

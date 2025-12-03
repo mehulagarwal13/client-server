@@ -1,52 +1,73 @@
 import Student from "../models/studentModel.js";
-//import Course from "../models/courseModel.js";
 import Review from "../models/reviewModel.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/jwtUtils.js";
-import crypto from "crypto"; // <-- ADDED: Needed for password reset functions
+import crypto from "crypto";
 
-// NOTE: The 'authId' field was removed from the Student Model.
-// The unique ID for a student is now the MongoDB generated '_id'.
-
-//--------------------------------Register----------------------------------------
 const register = async (req, res) => {
   try {
     console.log("[Register] Received request body:", req.body);
 
-    const { email, password, university, course } = req.body;
+    const { 
+      email, password, university, course,
+      fullName, phone, preferredLanguage, location, dateOfBirth, bio,
+      graduationYear, currentStatus, skills, linkedinUrl, githubUrl,
+      goals, mentorshipArea, availability
+    } = req.body;
 
-    // ----Validate required fields
-    if (!email || !password || !university || !course) {
+    if (!email || !password) {
       console.log("[Register] Missing required fields");
       return res.status(400).json({
         msg: "Missing required fields",
-        required: ["email", "password", "university", "course"],
+        required: ["email", "password"],
       });
     }
 
-    // Check if user exist
     const existingUser = await Student.findOne({ email });
     if (existingUser) {
       console.log("[Register] User already exists:", email);
       return res.status(400).json({ msg: "User already exists" });
     }
 
-    // Create new User (password will be hashed by pre-save hook)
     const newUser = new Student({
       email,
       password,
-      university,
-      course,
+      university: university || '',
+      course: course || '',
+      fullName: fullName || '',
+      phone: phone || '',
+      preferredLanguage: preferredLanguage || 'English',
+      location: location || '',
+      dateOfBirth: dateOfBirth || '',
+      bio: bio || '',
+      graduationYear: graduationYear || '',
+      currentStatus: currentStatus || 'Student',
+      skills: skills || [],
+      linkedinUrl: linkedinUrl || '',
+      githubUrl: githubUrl || '',
+      goals: goals || '',
+      mentorshipArea: mentorshipArea || '',
+      availability: availability || [],
     });
 
     await newUser.save();
     console.log("[Register] Student registered successfully:", email);
+    
+    const token = generateToken(newUser);
+    
     return res.status(201).json({
       msg: "Student created successfully",
+      token: token,
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        fullName: newUser.fullName,
+        university: newUser.university,
+        course: newUser.course,
+      }
     });
   } catch (err) {
     console.error("[Register] Error:", err);
-    // ----More detailed error messages
     if (err.name === "ValidationError") {
       return res.status(400).json({
         msg: "Validation error",
@@ -65,18 +86,17 @@ const register = async (req, res) => {
   }
 };
 
-//----------------------------------Login-------------------------------------------------
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body; //find user
+    const { email, password } = req.body;
 
     const user = await Student.findOne({ email });
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
-    } //compare password
+    }
 
     const isMatched = await bcrypt.compare(password, user.password);
-    if (!isMatched) return res.status(400).json({ msg: "Invalid Credentials" }); //create jwt
+    if (!isMatched) return res.status(400).json({ msg: "Invalid Credentials" });
 
     const token = generateToken(user);
 
@@ -85,6 +105,13 @@ const login = async (req, res) => {
       status: "success",
       message: "Login Successful",
       token: token,
+      user: {
+        id: user._id,
+        email: user.email,
+        fullName: user.fullName || user.email.split('@')[0],
+        university: user.university,
+        course: user.course,
+      }
     });
   } catch (err) {
     console.error(err);
@@ -92,7 +119,40 @@ const login = async (req, res) => {
   }
 };
 
-export { register, login };
+const getDashboard = async (req, res) => {
+  try {
+    const student = req.student;
+    const profileCompletion = calculateProfileCompletion(student);
+    
+    res.status(200).json({
+      profileCompletion,
+      pendingRequests: [],
+      acceptedConnections: [],
+      totalConnections: 0,
+      upcomingSessions: [],
+      announcements: [
+        { id: 1, title: 'Welcome!', message: 'Welcome to TechLearn Platform', time: 'Just now' },
+        { id: 2, title: 'New Features', message: 'Check out our new mentorship features', time: '1 day ago' },
+      ],
+    });
+  } catch (error) {
+    console.error('[Dashboard] Error:', error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const calculateProfileCompletion = (student) => {
+  let completed = 0;
+  const fields = ['email', 'university', 'course', 'fullName', 'phone', 'bio', 'skills', 'goals'];
+  fields.forEach(field => {
+    if (student[field] && (Array.isArray(student[field]) ? student[field].length > 0 : student[field].length > 0)) {
+      completed++;
+    }
+  });
+  return Math.round((completed / fields.length) * 100);
+};
+
+export { register, login, getDashboard };
 
 // ----- Forgot Password -----
 export const forgotPassword = async (req, res) => {

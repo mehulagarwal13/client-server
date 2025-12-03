@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = 'https://gateway-api-exmk.onrender.com' || '/api';
+const API_URL = '/api';
 const years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 const initialState = {

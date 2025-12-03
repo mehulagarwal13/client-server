@@ -1,4 +1,3 @@
-// student-service/routes/studentRoutes.js
 import express from "express";
 import {
   getStudentProfile,
@@ -11,9 +10,10 @@ import {
   postReview,
   login,
   register,
+  getDashboard,
   forgotPassword,
   resetPassword,
-} from "../controllers/studentController.js"; // Make sure you export createStudentProfile
+} from "../controllers/studentController.js";
 import { protect, getAuthUser } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -22,9 +22,9 @@ router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
-// All routes below this require a student profile to exist.
 router.use(protect);
 
+router.route("/dashboard").get(getDashboard);
 router.route("/profile").get(getStudentProfile).put(updateStudentProfile);
 router.route("/enrollments").get(getEnrollments);
 router.route("/enroll").post(enrollInCourse);

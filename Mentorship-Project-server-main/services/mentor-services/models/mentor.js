@@ -16,34 +16,29 @@ const mentorSchema = new Schema({
     required: true,
     minLength: 4,
   },
-  expertise: {
-    type: String,
-    required: true,
-  },
-  bio: {
-    type: String,
-    required: true,
-  },
-  university: {
-    type: String,
-    required: true,
-  },
-  course: {
-    type: String,
-    required: true,
-  },
-  passingYear: {
-    type: Number,
-    required: true,
-  },
-
-  // ----- New fields for forgot/reset password -----
+  fullName: { type: String, default: '' },
+  phone: { type: String, default: '' },
+  linkedinUrl: { type: String, default: '' },
+  githubUrl: { type: String, default: '' },
+  portfolioUrl: { type: String, default: '' },
+  expertise: { type: String, default: '' },
+  bio: { type: String, default: '' },
+  university: { type: String, default: '' },
+  course: { type: String, default: '' },
+  passingYear: { type: Number, default: 2024 },
+  currentJobTitle: { type: String, default: '' },
+  currentCompany: { type: String, default: '' },
+  yearsOfExperience: { type: Number, default: 0 },
+  languages: { type: [String], default: ['English'] },
+  mentorshipAreas: { type: [String], default: [] },
+  availability: { type: Schema.Types.Mixed, default: {} },
+  additionalNotes: { type: String, default: '' },
+  hourlyRate: { type: String, default: '' },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-});
+}, { timestamps: true });
 
 mentorSchema.pre('save', hashPasswordHook);
-
 
 const Mentor = mongoose.model("Mentor", mentorSchema);
 

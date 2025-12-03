@@ -3,8 +3,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Use relative path since vite proxy is configured
-const API_URL = 'https://gateway-api-exmk.onrender.com' || '/api'; 
+const API_URL = '/api'; 
 
 const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false);

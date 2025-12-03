@@ -4,60 +4,88 @@ import Mentor from "../models/mentor.js";
 import { sendResetEmail } from "../utils/sendEmail.js";
 import crypto from 'crypto';
 
-//--------------------------------Register----------------------------------------
 const register = async (req, res) => {
   try {
-    const { email, password,expertise, bio, university, course, passingYear } = req.body;
+    const { 
+      email, password, expertise, bio, university, course, passingYear,
+      fullName, phone, linkedinUrl, githubUrl, portfolioUrl,
+      currentJobTitle, currentCompany, yearsOfExperience, languages,
+      mentorshipAreas, availability, additionalNotes, hourlyRate
+    } = req.body;
 
-    //Check if user exist
     const existingUser = await Mentor.findOne({ email });
     if (existingUser)
       return res.status(400).json({ msg: "User already exists" });
 
-    //Note: Already hashed password in model before saving
-
-    //Create new User
     const newUser = new Mentor({
       email,
       password,
-      expertise,
-      bio,university,course,passingYear
+      expertise: expertise || '',
+      bio: bio || '',
+      university: university || currentCompany || '',
+      course: course || currentJobTitle || '',
+      passingYear: passingYear || '',
+      fullName: fullName || '',
+      phone: phone || '',
+      linkedinUrl: linkedinUrl || '',
+      githubUrl: githubUrl || '',
+      portfolioUrl: portfolioUrl || '',
+      currentJobTitle: currentJobTitle || '',
+      currentCompany: currentCompany || '',
+      yearsOfExperience: yearsOfExperience || 0,
+      languages: languages || ['English'],
+      mentorshipAreas: mentorshipAreas || [],
+      availability: availability || {},
+      additionalNotes: additionalNotes || '',
+      hourlyRate: hourlyRate || '',
     });
 
     await newUser.save();
-
     console.log("Mentor registered Successfully");
-    return res.status(201).json({ msg: "Mentor created successfully" });
+    
+    const token = generateToken(newUser);
+    
+    return res.status(201).json({ 
+      msg: "Mentor created successfully",
+      token: token,
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        fullName: newUser.fullName,
+        expertise: newUser.expertise,
+      }
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ msg: "Server error" });
   }
 };
 
-
-//----------------------------------Login-------------------------------------------------
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    //find user
     const user = await Mentor.findOne({ email });
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    //compare password
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) return res.status(400).json({ msg: "Invalid Credentials" });
 
-    //create jwt
-    const token=generateToken(user);
+    const token = generateToken(user);
 
     console.log(`Token: ${token}`);
     res.status(200).json({
       status: "success",
       message: "Login Successful",
       token: token,
+      user: {
+        id: user._id,
+        email: user.email,
+        fullName: user.fullName || user.email.split('@')[0],
+        expertise: user.expertise,
+      }
     });
   } catch (err) {
     console.error(err);

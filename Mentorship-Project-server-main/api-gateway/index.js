@@ -17,10 +17,13 @@ const ALLOWED_ORIGINS = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || ALLOWED_ORIGINS.indexOf(origin) !== -1 || origin?.includes('.replit.dev')) {
+      if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || (origin && origin.includes('.replit.dev'))) {
         callback(null, true);
+      } else if (!origin) {
+        callback(null, false);
       } else {
-        callback(null, true);
+        console.warn(`[Gateway] Blocked CORS request from unauthorized origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,

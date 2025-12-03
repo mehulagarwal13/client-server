@@ -1,0 +1,76 @@
+import { spawn } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const services = [
+  {
+    name: 'API Gateway',
+    cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'api-gateway'),
+    command: 'npm',
+    args: ['start'],
+    env: { PORT: '8000' }
+  },
+  {
+    name: 'Student Service',
+    cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'student-service'),
+    command: 'npm',
+    args: ['start'],
+    env: { PORT: '3001' }
+  },
+  {
+    name: 'Auth Service',
+    cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'auth-service'),
+    command: 'npm',
+    args: ['start'],
+    env: { PORT: '3002' }
+  },
+  {
+    name: 'Mentor Service',
+    cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'mentor-services'),
+    command: 'npm',
+    args: ['start'],
+    env: { PORT: '3003' }
+  },
+  {
+    name: 'Frontend',
+    cwd: path.join(__dirname, 'client'),
+    command: 'npm',
+    args: ['run', 'dev'],
+    env: {}
+  }
+];
+
+console.log('🚀 Starting all services...\n');
+
+services.forEach(service => {
+  const env = { ...process.env, ...service.env };
+  
+  const proc = spawn(service.command, service.args, {
+    cwd: service.cwd,
+    env: env,
+    stdio: 'inherit',
+    shell: true
+  });
+
+  proc.on('error', (err) => {
+    console.error(`❌ Error starting ${service.name}:`, err);
+  });
+
+  proc.on('exit', (code, signal) => {
+    if (code !== 0) {
+      console.error(`❌ ${service.name} exited with code ${code}`);
+    }
+  });
+
+  console.log(`✅ Started ${service.name}`);
+});
+
+console.log('\n📝 All services started. Press Ctrl+C to stop all services.\n');
+
+process.on('SIGINT', () => {
+  console.log('\n🛑 Shutting down all services...');
+  process.exit(0);
+});

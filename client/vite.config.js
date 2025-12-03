@@ -17,12 +17,18 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    host: "0.0.0.0",
+    port: 5000,
+    strictPort: true,
+    hmr: {
+      clientPort: 5000,
+    },
     proxy: {
       "/api": {
         target: "http://localhost:8000",
         changeOrigin: true,
         secure: false,
-        timeout: 10000, // 10 seconds timeout
+        timeout: 10000,
       },
     },
   },

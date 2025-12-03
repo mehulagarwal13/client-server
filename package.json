@@ -1,0 +1,13 @@
+{
+  "name": "mentorship-platform",
+  "version": "1.0.0",
+  "description": "Mentorship platform with microservices architecture",
+  "type": "module",
+  "scripts": {
+    "start": "node start-all.js",
+    "dev": "node start-all.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

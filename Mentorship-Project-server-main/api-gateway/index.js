@@ -7,15 +7,22 @@ dotenv.config();
 
 const app = express();
 
-// 1. HARDCODED CORS FIX: Allowing your Vercel client and localhost
+// CORS configuration for Replit and local development
 const ALLOWED_ORIGINS = [
-  "https://client-944o.vercel.app", // Your Vercel frontend
-  "http://localhost:5173", // Your local dev environment
+  "https://client-944o.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5000",
 ];
 
 app.use(
   cors({
-    origin: ALLOWED_ORIGINS,
+    origin: function (origin, callback) {
+      if (!origin || ALLOWED_ORIGINS.indexOf(origin) !== -1 || origin?.includes('.replit.dev')) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   })
 );
@@ -44,22 +51,38 @@ app.use((req, res, next) => {
 app.use(
   "/api/student",
   createProxyMiddleware({
-    // ✅ FIX: Use the public, fully qualified URL for the Student Service.
-    target:
-      "https://mentorship-project-server-1.onrender.com/api/student" ||
-      "http://localhost:5000/api/student",
+    target: "http://localhost:3001",
     changeOrigin: true,
-    timeout: 15000, // Increased timeout slightly for better waking tolerance
+    timeout: 15000,
     proxyTimeout: 15000,
-
     onError: (err, req, res) => {
-      console.error(`[Gateway] Proxy error:`, err);
+      console.error(`[Gateway] Student Service proxy error:`, err);
       if (!res.headersSent) {
         res.status(502).json({
           error: "Gateway proxy error",
           message: err.message,
-          details:
-            "Cannot connect to student service. Check public URL and ensure service is awake.",
+          details: "Cannot connect to student service on port 3001",
+        });
+      }
+    },
+  })
+);
+
+// ---AUTH SERVICE PROXY---
+app.use(
+  "/api/auth",
+  createProxyMiddleware({
+    target: "http://localhost:3002",
+    changeOrigin: true,
+    timeout: 15000,
+    proxyTimeout: 15000,
+    onError: (err, req, res) => {
+      console.error(`[Gateway] Auth Service proxy error:`, err);
+      if (!res.headersSent) {
+        res.status(502).json({
+          error: "Gateway proxy error",
+          message: err.message,
+          details: "Cannot connect to auth service on port 3002",
         });
       }
     },
@@ -70,13 +93,19 @@ app.use(
 app.use(
   "/api/mentor",
   createProxyMiddleware({
-    // Target: Internal Render service name - Placeholder still needs replacement
-    target: "http://<your-mentor-service-name>:5003",
+    target: "http://localhost:3003",
     changeOrigin: true,
-    // Note: This pathRewrite seems incorrect and should probably be stripped like the student one.
-    // Assuming your mentor service expects paths without '/api/mentor'
-    pathRewrite: {
-      "^/api/mentor": "",
+    timeout: 15000,
+    proxyTimeout: 15000,
+    onError: (err, req, res) => {
+      console.error(`[Gateway] Mentor Service proxy error:`, err);
+      if (!res.headersSent) {
+        res.status(502).json({
+          error: "Gateway proxy error",
+          message: err.message,
+          details: "Cannot connect to mentor service on port 3003",
+        });
+      }
     },
   })
 );

@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+.slick-slider ::before{
+    display: none;
+}
+
+*{
+    font-family: "Montserrat";
+}
+
+.fontHead{
+    font-size: 50px;
+    /* line-height: 1; */
+}
+
+@media (width < 640px) {
+    .fontHead{
+        font-size: 30px;
+    }
+}

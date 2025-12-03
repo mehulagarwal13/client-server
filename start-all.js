@@ -11,28 +11,44 @@ const services = [
     cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'api-gateway'),
     command: 'npm',
     args: ['start'],
-    env: { PORT: '8000' }
+    env: { 
+      PORT: '8000',
+      MONGO_URI: process.env.MONGO_URI,
+      JWT_SECRET: process.env.JWT_SECRET
+    }
   },
   {
     name: 'Student Service',
     cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'student-service'),
     command: 'npm',
     args: ['start'],
-    env: { PORT: '3001' }
+    env: { 
+      PORT: '3001',
+      MONGO_URI: process.env.MONGO_URI,
+      JWT_SECRET: process.env.JWT_SECRET
+    }
   },
   {
     name: 'Auth Service',
     cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'auth-service'),
     command: 'npm',
     args: ['start'],
-    env: { PORT: '3002' }
+    env: { 
+      PORT: '3002',
+      MONGO_URI: process.env.MONGO_URI,
+      JWT_SECRET: process.env.JWT_SECRET
+    }
   },
   {
     name: 'Mentor Service',
     cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'mentor-services'),
     command: 'npm',
     args: ['start'],
-    env: { PORT: '3003' }
+    env: { 
+      PORT: '3003',
+      MONGO_URI: process.env.MONGO_URI,
+      JWT_SECRET: process.env.JWT_SECRET
+    }
   },
   {
     name: 'Frontend',

@@ -1,0 +1,30 @@
+Build a complete mentorship platform with three user roles: Student, Mentor, and Admin. The system must have detailed registration flows, authentication, role-based dashboards, community groups, chat functionalities, announcements, session management, user management, profile screens, and all workflows needed for a real mentoring ecosystem.
+
+PART 1 — AUTHENTICATION & ROLE SELECTION
+Create a login page where users enter email and password. Include password visibility toggle and helpful error messages. Add a role selection screen that allows new users to choose whether they want to register as a Student or as a Mentor. After they complete registration, redirect them to their respective dashboards. Admin accounts are created separately and can log in directly.
+
+PART 2 — MENTOR REGISTRATION
+Create a very detailed, multi-step Mentor Registration Form.
+Step 1 should include: Full Name, Official Email ID, Mobile Number, Password, LinkedIn Profile URL, Portfolio or GitHub URL, and Profile Photo upload.
+Step 2 should include: Current Job Title, Current Company, Years of Experience, Skills or Expertise (multiple), Languages spoken, and any other professional attributes.
+Step 3 should include: Mentorship Areas, Availability Hours (days and time slots), and a Short Bio where mentors can describe themselves.
+Every step must have validation, clear instructions, next/back buttons, and a progress indicator.
+
+PART 3 — STUDENT REGISTRATION
+Create a detailed, multi-step Student Registration Form.
+Step 1 should capture: Full Name, Official Email ID, Password, Mobile Number, Preferred Language, Profile Photo upload, Location or City, Date of Birth or Age, and a Short Bio.
+Step 2 should include Education Details: Course or Branch, College Name, Graduation Year.
+Step 3 should include Career and Learning Information: Current Status (Student, Job Seeker, or Working), Skills, Social Links (LinkedIn/GitHub), Goals or what they are looking for, Mentorship Area they want help in, Availability, and Resume Upload.
+All fields should have validation, well-structured sections, and a step progress indicator.
+
+PART 4 — STUDENT DASHBOARD
+After login, build a personalized Student Dashboard that displays a welcome message with the student’s name. It must include a snapshot of enrolled programs, sessions completed, and active streak. Add a roadmap or progress tracker for learning areas like Web Development, DSA, or Career Skills, each with progress bars and levels (Beginner, Intermediate, Advanced). Include a list of upcoming mentorship sessions with mentor names, dates, times, and join buttons. Add an announcements section showing important updates. Add a preview of community chat with recent messages. Provide quick-access buttons for Study Material, Assignments, Community, Profile, and Settings. The dashboard should be clean, organized, and easy to understand.
+
+PART 5 — MENTOR DASHBOARD
+Create a Mentor Dashboard that displays a welcome header with the mentor’s name and overview cards showing total mentees, upcoming sessions, pending doubts, and messages today. Include a detailed mentee list with student names, emails, interest areas, last active time, and action buttons for viewing profile or messaging. Provide a session management system where mentors can create new sessions by entering title, date, time, mode, and meeting link. They should also be able to view, edit, or cancel upcoming sessions. Add a section for managing student doubts with a list of questions that mentors can respond to. Add shortcuts to community groups the mentor belongs to.
+
+PART 6 — ADMIN DASHBOARD
+Create an Admin Dashboard with a side navigation menu for Overview, Users, Communities, Announcements, Analytics, and Settings.
+The Overview page should show total users, number of mentors, number of students, active users today, and basic analytics.
+The Users section must include a table showing name, email, role, status, and date joined with the ability to change roles, activate or deactivate users, filter by role or status, and add an admin.
+The Community section should list all groups and allow the admin to create new groups with a name, description, and assigned mentor. Include edit and delete options.

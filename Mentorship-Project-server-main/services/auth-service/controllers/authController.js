@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../utils/jwtUtils.js";
-import { publishToQueue } from "../utils/rabbitmq.js";
 
 //--------------------------------Register----------------------------------------
 const register = async (req, res) => {
@@ -25,13 +24,6 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
-
-    //Publishing the additional data too rabbitMQ
-    await publishToQueue("user_registration",{
-      userId:newUser._id,
-      role,
-      profileData:profiledata,
-    })
 
     console.log("User registered Successfully");
     return res.status(201).json({ msg: "User created successfully" });

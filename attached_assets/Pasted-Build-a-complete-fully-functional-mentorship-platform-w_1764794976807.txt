@@ -1,0 +1,267 @@
+Build a complete, fully functional mentorship platform with three user roles: Student, Mentor, and Admin. 
+Design every part of the system in a clean, modern, intuitive, and user-friendly format. 
+The platform should include registration flows, authentication, role-based dashboards, community groups, 
+real-time chat spaces, and management sections for announcements, users, sessions, and profiles.
+
+-------------------------------------------------------------------
+PART 1 — AUTHENTICATION & ROLE SELECTION
+-------------------------------------------------------------------
+
+Create the following:
+
+1. A login page where users can enter email and password.
+2. A role selection screen allowing new users to choose:
+   - “Register as Student”
+   - “Register as Mentor”
+3. After successful registration, users should be redirected to the dashboard meant for their role.
+4. Admin accounts are pre-created and managed separately.
+5. Include friendly error messages, password visibility toggle, and validation for all required fields.
+
+-------------------------------------------------------------------
+PART 2 — MENTOR REGISTRATION (EXTREMELY DETAILED FORM)
+-------------------------------------------------------------------
+
+Create a highly polished, multi-step Mentor Registration experience. 
+Include ALL of these fields in a clean and organized layout:
+
+Step 1 — Basic Profile
+- Mentor Full Name  
+- Official Email ID  
+- Mobile Number  
+- Profile Photo Upload  
+- LinkedIn Profile URL  
+- Portfolio / GitHub URL  
+- Password  
+
+Step 2 — Professional Background
+- Current Job Title  
+- Current Company  
+- Years of Experience  
+- Skills / Expertise (multiple selectable items)  
+- Languages the mentor can speak  
+
+Step 3 — Mentorship Information
+- Mentorship Areas (multiple selectable categories)  
+- Availability Hours (days of the week + preferred time slots)  
+- Short Bio describing the mentor  
+- Additional notes or optional introduction  
+
+Each step should have:
+- Clear navigation buttons (Next, Back, Submit)
+- Real-time field validation
+- A progress tracker at the top showing how many steps are completed
+
+-------------------------------------------------------------------
+PART 3 — STUDENT REGISTRATION (EXTREMELY DETAILED FORM)
+-------------------------------------------------------------------
+
+Create a polished, multi-step Student Registration flow. 
+Include ALL of the following fields exactly:
+
+Step 1 — Basic Information
+- Full Name  
+- Official Email ID  
+- Mobile Number  
+- Password  
+- Preferred Language  
+- Profile Photo Upload  
+- Location / City  
+- Date of Birth / Age  
+- Short Bio  
+
+Step 2 — Education Details
+Include a structured form with:
+- Course / Branch  
+- College Name  
+- Graduation Year  
+
+Step 3 — Learning & Career Information
+- Current Status (Student / Job Seeker / Working)  
+- Skills (multiple selectable)  
+- Social Links (LinkedIn, GitHub)  
+- Goal / What they are looking for  
+- Mentorship Area they want guidance in  
+- Availability (days and time slots)  
+- Resume Upload  
+
+Include:
+- Validation for all required fields  
+- A clean step-by-step progress UI  
+- Clear instructions for each section  
+
+-------------------------------------------------------------------
+PART 4 — STUDENT DASHBOARD (FULL DESCRIPTION)
+-------------------------------------------------------------------
+
+After login, create a completely personalized Student Dashboard with:
+
+1. A welcome banner showing the student’s name.
+2. A quick snapshot section showing:
+   - Number of enrolled mentorship programs
+   - Lessons or sessions completed
+   - Active learning streak
+3. A progress tracker for different learning roadmaps like:
+   - Web Development
+   - DSA
+   - Career Skills  
+   (Each with progress bars and status labels such as Beginner, Intermediate, or Advanced.)
+4. A section displaying upcoming mentorship sessions with:
+   - Session title  
+   - Mentor name  
+   - Date and time  
+   - Join button  
+5. A dedicated announcements section showing:
+   - Important updates  
+   - Mentor posts  
+   - New resources uploaded  
+6. A mini preview of the community chat showing the last few messages from the main channel.
+7. Quick action buttons:
+   - Study Material  
+   - Assignments  
+   - Community Chat  
+   - Profile  
+   - Settings  
+
+Everything should be neatly organized, clean, and highly readable.
+
+-------------------------------------------------------------------
+PART 5 — MENTOR DASHBOARD (FULL DESCRIPTION)
+-------------------------------------------------------------------
+
+The Mentor Dashboard should allow mentors to manage mentees, sessions, doubts, and communication.
+
+Sections to include:
+
+1. A personalized welcome header with mentor name.
+2. Overview cards showing:
+   - Total mentees assigned  
+   - Upcoming mentorship sessions  
+   - Pending doubts/questions from students  
+   - Messages received today  
+3. A full mentee list with:
+   - Student name  
+   - Email  
+   - Interest area  
+   - Last active time  
+   - Buttons: View Profile, Message  
+4. Session Management:
+   - Table to view all upcoming sessions  
+   - A form to create new sessions with fields:
+     * Title  
+     * Date and Time  
+     * Mode (online/offline)  
+     * Meeting link  
+   - Buttons to edit or cancel existing sessions  
+5. Doubt Management:
+   - List of questions asked by students  
+   - Mentor can click “Reply” to answer through chat or comments  
+6. Community Quick Access:
+   - List of groups the mentor is part of  
+   - Each with a shortcut button: “Open Chat”  
+
+-------------------------------------------------------------------
+PART 6 — ADMIN DASHBOARD (FULL DESCRIPTION)
+-------------------------------------------------------------------
+
+The Admin Dashboard should include:
+
+1. A fixed sidebar with menu items:
+   - Overview  
+   - Users  
+   - Communities  
+   - Announcements  
+   - Analytics  
+   - Settings  
+2. Overview Page containing:
+   - Total users  
+   - Number of mentors  
+   - Number of students  
+   - Number of active users today  
+   - Simple graphical analytics (growth, engagement)  
+3. User Management:
+   - Table displaying all users with:
+     * Name  
+     * Email  
+     * Role (Student/Mentor/Admin)  
+     * Status (Active/Blocked)  
+     * Date joined  
+   - Controls:
+     * Change role  
+     * Activate/Deactivate user  
+     * Filter users by role or status  
+     * Add Admin button  
+4. Community Group Management:
+   - List of community groups  
+   - Create new group form with fields:
+     * Group name  
+     * Description  
+     * Assigned mentor  
+   - Buttons: Edit group, Delete group  
+5. Announcement Management:
+   - List of all announcements  
+   - Ability to create, edit, delete announcements  
+   - Fields:
+     * Title  
+     * Message  
+     * Target audience (All / Students / Mentors)  
+6. Analytics Page:
+   - Cards showing key metrics  
+   - Graphs showing daily active users  
+   - Most active community groups  
+   - Total messages sent  
+
+-------------------------------------------------------------------
+PART 7 — COMMUNITY & CHAT SYSTEM (FULL DESCRIPTION)
+-------------------------------------------------------------------
+
+Create a modern, real-time Community & Chat experience similar to Slack or Discord.
+
+Layout:
+
+Left Sidebar:
+- List of community channels such as:
+  * #general  
+  * #dsa  
+  * #web-dev  
+  * #announcements  
+- List of direct messages (students and mentors)
+- Highlight active channel
+
+Main Chat Panel:
+- Channel title and description at top
+- Full conversation view showing:
+  - Sender name  
+  - Role badge (Student/Mentor/Admin)  
+  - Timestamp  
+  - Message text  
+- Deliver messages in chronological order  
+- Typing indicator (“Someone is typing...”)  
+- Message input area:
+  - Text box  
+  - Emoji support  
+  - Send button  
+  - Press Enter to send  
+
+Right Sidebar:
+- Channel information  
+- Number of members  
+- List of online members with role tags  
+- Channel description  
+
+-------------------------------------------------------------------
+FINAL INSTRUCTIONS
+-------------------------------------------------------------------
+
+Deliver everything in a complete, organized, and easy-to-understand manner:
+
+- Clean structure  
+- Detailed UI layouts  
+- Full form flows  
+- All dashboards  
+- All pages  
+- All interactions  
+- All validations  
+- Polished design  
+- Smooth navigation  
+- Descriptive labels, placeholders, tooltips  
+- Modern, intuitive user experience  

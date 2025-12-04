@@ -104,6 +104,30 @@ const Community = () => {
     return 'mentor';
   };
 
+  const handleMessageClick = (item) => {
+    const token = localStorage.getItem('token');
+    const currentRole = localStorage.getItem('role');
+    const itemType = getItemType(item);
+
+    // Require authentication
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    // Only support chats where we have an ID and it's a student/mentor
+    if (!item._id) return;
+
+    const isCurrentStudentOrMentor = currentRole === 'student' || currentRole === 'mentor';
+    const isTargetStudentOrMentor = itemType === 'student' || itemType === 'mentor';
+
+    if (!isCurrentStudentOrMentor || !isTargetStudentOrMentor) {
+      return;
+    }
+
+    navigate(`/messages/${item._id}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#F8F7FF] to-white">
@@ -256,16 +280,7 @@ const Community = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                   whileHover={{ y: -8, scale: 1.02 }}
-                  className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 cursor-pointer"
-                  onClick={() => {
-                    if (isStudent) {
-                      navigate(`/student-profile`);
-                    } else if (isRecruiter) {
-                      navigate(`/recruiter-profile`);
-                    } else {
-                      navigate(`/mentor-dashboard`);
-                    }
-                  }}
+                  className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
                 >
                   {/* Avatar */}
                   <div className="text-center mb-4">
@@ -362,6 +377,36 @@ const Community = () => {
                       : 'bg-green-50 text-green-600'
                   }`}>
                     {isStudent ? 'Student' : isRecruiter ? 'Recruiter' : 'Mentor'}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="mt-4 flex justify-center gap-3">
+                    <button
+                      onClick={() => {
+                        if (isStudent) {
+                          navigate(`/student-profile`);
+                        } else if (isRecruiter) {
+                          navigate(`/recruiter-profile`);
+                        } else {
+                          navigate(`/mentor-dashboard`);
+                        }
+                      }}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => handleMessageClick(item)}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors ${
+                        (isStudent || isMentor)
+                          ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-500 hover:to-pink-500'
+                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      }`}
+                      disabled={!(isStudent || isMentor)}
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      Message
+                    </button>
                   </div>
                 </motion.div>
               );

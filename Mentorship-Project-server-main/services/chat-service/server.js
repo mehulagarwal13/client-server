@@ -22,6 +22,8 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 
+// Mount routes at root - API Gateway handles /api/chat prefix
+app.use('/', chatRoutes);
 app.use('/api/chat', chatRoutes);
 
 app.get('/health', (req, res) => {

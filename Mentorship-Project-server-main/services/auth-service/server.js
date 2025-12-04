@@ -18,7 +18,9 @@ const startServer=async ()=>{
         await mongoose.connect(process.env.MONGO_URI);
         console.log(`MongoDB Successfully Connected ✅`);
 
-        app.use("/api/auth",authRoutes);
+        // Mount routes at root - API Gateway handles /api/auth prefix
+        app.use("/", authRoutes);
+        app.use("/api/auth", authRoutes);
 
         //Start server after connecting database
         app.listen(PORT,()=>{

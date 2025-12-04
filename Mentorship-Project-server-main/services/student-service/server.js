@@ -38,6 +38,10 @@ const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log(`MongoDB Successfully Connected ✅`);
+    
+    // Mount routes at root - API Gateway handles /api/student prefix
+    app.use("/", studentRoutes);
+    // Also support direct access with prefix for testing
     app.use("/api/student", studentRoutes);
 
     //  Debug: Catch-all route to see unmatched requests
@@ -55,8 +59,8 @@ const startServer = async () => {
 
     //  Debug: Log all registered routes
     console.log("Registered routes:");
-    console.log("  POST /api/student/register");
-    console.log("  POST /api/student/login");
+    console.log("  POST /register (via gateway: /api/student/register)");
+    console.log("  POST /login (via gateway: /api/student/login)");
 
     //Start server after connecting database
     app.listen(PORT, () => {

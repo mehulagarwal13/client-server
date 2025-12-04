@@ -113,6 +113,49 @@ app.use(
   })
 );
 
+// ---CHAT SERVICE PROXY---
+app.use(
+  "/api/chat",
+  createProxyMiddleware({
+    target: "http://localhost:3004",
+    changeOrigin: true,
+    timeout: 15000,
+    proxyTimeout: 15000,
+    onError: (err, req, res) => {
+      console.error(`[Gateway] Chat Service proxy error:`, err);
+      if (!res.headersSent) {
+        res.status(502).json({
+          error: "Gateway proxy error",
+          message: err.message,
+          details: "Cannot connect to chat service on port 3004",
+        });
+      }
+    },
+  })
+);
+
+// ---MESSAGES API PROXY (for legacy endpoints)---
+app.use(
+  "/api/messages",
+  createProxyMiddleware({
+    target: "http://localhost:3004",
+    changeOrigin: true,
+    pathRewrite: { '^/api/messages': '/api/chat' },
+    timeout: 15000,
+    proxyTimeout: 15000,
+    onError: (err, req, res) => {
+      console.error(`[Gateway] Messages proxy error:`, err);
+      if (!res.headersSent) {
+        res.status(502).json({
+          error: "Gateway proxy error",
+          message: err.message,
+          details: "Cannot connect to chat service on port 3004",
+        });
+      }
+    },
+  })
+);
+
 // Start Gateway
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

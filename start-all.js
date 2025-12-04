@@ -51,6 +51,17 @@ const services = [
     }
   },
   {
+    name: 'Chat Service',
+    cwd: path.join(__dirname, 'Mentorship-Project-server-main', 'services', 'chat-service'),
+    command: 'npm',
+    args: ['start'],
+    env: { 
+      CHAT_PORT: '3004',
+      MONGO_URI: process.env.MONGO_URI,
+      JWT_SECRET: process.env.JWT_SECRET
+    }
+  },
+  {
     name: 'Frontend',
     cwd: path.join(__dirname, 'client'),
     command: 'npm',

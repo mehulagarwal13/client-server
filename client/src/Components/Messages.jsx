@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 
 const API_URL = '/api';
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin;
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -120,16 +120,17 @@ const Messages = () => {
   const fetchMessages = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/messages/${userId}`, {
+      const response = await axios.get(`${API_URL}/chat/private/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setMessages(response.data);
+      setMessages(response.data.messages || response.data || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
         navigate('/student-login');
       }
+      setMessages([]);
     } finally {
       setLoading(false);
     }
@@ -181,10 +182,8 @@ const Messages = () => {
       }
 
       const messageData = {
-        sender: user._id || user.id,
-        receiver: userId,
-        senderModel: currentUserRole === 'student' ? 'Student' : 'Recruiter',
-        receiverModel: currentUserRole === 'student' ? 'Recruiter' : 'Student',
+        receiverId: userId,
+        receiverModel: currentUserRole === 'student' ? 'Mentor' : 'Student',
         content: messageInput || (pendingFile ? 'Sent a file' : ''),
         messageType: pendingFile ? (pendingFile.type.startsWith('image/') ? 'image' : 'file') : 'text',
         fileUrl
@@ -193,10 +192,10 @@ const Messages = () => {
       if (socket && socket.connected) {
         socket.emit('send-message', messageData);
       } else {
-        // Fallback: save message via API if socket is not available
-        await axios.post(`${API_URL}/messages/send`, messageData, {
+        const response = await axios.post(`${API_URL}/chat/send`, messageData, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        setMessages(prev => [...prev, response.data.message]);
       }
 
       setMessageInput('');

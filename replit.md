@@ -35,7 +35,13 @@ The application uses a microservices architecture with the following components:
    - Handles mentor-specific features
    - Location: `Mentorship-Project-server-main/services/mentor-services/`
 
-5. **Frontend** (Port 5000)
+5. **Chat Service** (Port 3004)
+   - Real-time messaging with Socket.IO
+   - Group and private chat functionality
+   - Message persistence with MongoDB
+   - Location: `Mentorship-Project-server-main/services/chat-service/`
+
+6. **Frontend** (Port 5000)
    - React-based SPA served via Vite
    - Proxies API requests to the API Gateway
    - Location: `client/`
@@ -163,6 +169,27 @@ This command:
 - `POST /api/mentor/register` - Register new mentor
 - `POST /api/mentor/login` - Mentor login
 
+### Chat Service (via /api/chat)
+- `POST /api/chat/private` - Create private chat room
+- `POST /api/chat/group` - Create group chat
+- `GET /api/chat/rooms` - Get user's chat rooms
+- `GET /api/chat/room/:roomId/messages` - Get messages from a room
+- `GET /api/chat/private/:recipientId` - Get private messages with user
+- `POST /api/chat/send` - Send a message
+- `POST /api/chat/read` - Mark messages as read
+- `POST /api/chat/group/:roomId/join` - Join a group
+- `POST /api/chat/group/:roomId/leave` - Leave a group
+- `GET /api/chat/group/:roomId/members` - Get group members
+
+### Socket.IO Events
+- `join-room` - Join a chat room
+- `leave-room` - Leave a chat room
+- `send-message` - Send real-time message
+- `receive-message` - Receive message
+- `typing` - Typing indicator
+- `user-online` / `user-offline` - Online status
+- `create-group` - Create group chat
+
 ## Configuration Details
 
 ### Vite Configuration
@@ -254,6 +281,17 @@ The application is configured for autoscale deployment on Replit:
 - Verify API Gateway routing to all services
 - Test real-time messaging features
 - Verify role-based access control
+
+## Recent Changes (December 4, 2025)
+
+### Chat Service Implementation
+- Created complete chat microservice with Socket.IO
+- Added Message model with support for text, image, and file messages
+- Added ChatRoom model for group and private chats
+- Implemented real-time messaging with Socket.IO events
+- Added typing indicators and online status tracking
+- Integrated chat service with API Gateway
+- Updated frontend Messages component to use new chat endpoints
 
 ## Recent Changes (December 3, 2025)
 

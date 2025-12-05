@@ -13,18 +13,10 @@ const Navbar = () => {
 
   const menuItems = [
     { label: "Home", href: "/" },
-<<<<<<< HEAD
-    { label: "Features", href: "/#features" },
-    // Hash route so it works on Vercel static hosting
-    { label: "Community", href: "/#chatroom" },
-    { label: "About", href: "/#about" },
-    { label: "Contact", href: "/#contact" },
-=======
     { label: "Features", href: "/features" },
     { label: "Community", href: "/community" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
->>>>>>> ac16b039a44bdbc5d60bb14058bb7f250c70a3c0
   ];
 
   useEffect(() => {

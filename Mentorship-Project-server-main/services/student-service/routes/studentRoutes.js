@@ -13,6 +13,7 @@ import {
   getDashboard,
   forgotPassword,
   resetPassword,
+  browseStudents,
 } from "../controllers/studentController.js";
 import { protect, getAuthUser } from "../middleware/authMiddleware.js";
 
@@ -21,6 +22,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
+router.get("/browse", browseStudents); // Public endpoint - no auth required
 
 router.use(protect);
 

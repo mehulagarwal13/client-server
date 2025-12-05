@@ -93,6 +93,20 @@ const login = async (req, res) => {
   }
 };
 
+export const browseMentors = async (req, res) => {
+  try {
+    // Get all mentors (public info only, no sensitive data)
+    const mentors = await Mentor.find({})
+      .select('-password -resetPasswordToken -resetPasswordExpires')
+      .lean();
+    
+    return res.status(200).json(mentors);
+  } catch (error) {
+    console.error('[Browse Mentors] Error:', error);
+    return res.status(500).json({ msg: 'Server error', error: error.message });
+  }
+};
+
 export { register, login };
 
 

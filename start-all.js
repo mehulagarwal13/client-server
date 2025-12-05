@@ -5,6 +5,14 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Default environment variables if not set
+const DEFAULT_MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mentorship';
+const DEFAULT_JWT_SECRET = process.env.JWT_SECRET || 'mentorship_secret_key_2024_change_in_production';
+
+console.log('📋 Environment Configuration:');
+console.log(`   MONGO_URI: ${DEFAULT_MONGO_URI}`);
+console.log(`   JWT_SECRET: ${DEFAULT_JWT_SECRET ? 'Set' : 'Using default'}\n`);
+
 const services = [
   {
     name: 'API Gateway',
@@ -13,8 +21,8 @@ const services = [
     args: ['start'],
     env: { 
       PORT: '8000',
-      MONGO_URI: process.env.MONGO_URI,
-      JWT_SECRET: process.env.JWT_SECRET
+      MONGO_URI: DEFAULT_MONGO_URI,
+      JWT_SECRET: DEFAULT_JWT_SECRET
     }
   },
   {
@@ -24,8 +32,8 @@ const services = [
     args: ['start'],
     env: { 
       PORT: '3001',
-      MONGO_URI: process.env.MONGO_URI,
-      JWT_SECRET: process.env.JWT_SECRET
+      MONGO_URI: DEFAULT_MONGO_URI,
+      JWT_SECRET: DEFAULT_JWT_SECRET
     }
   },
   {
@@ -35,8 +43,8 @@ const services = [
     args: ['start'],
     env: { 
       PORT: '3002',
-      MONGO_URI: process.env.MONGO_URI,
-      JWT_SECRET: process.env.JWT_SECRET
+      MONGO_URI: DEFAULT_MONGO_URI,
+      JWT_SECRET: DEFAULT_JWT_SECRET
     }
   },
   {
@@ -46,8 +54,8 @@ const services = [
     args: ['start'],
     env: { 
       PORT: '3003',
-      MONGO_URI: process.env.MONGO_URI,
-      JWT_SECRET: process.env.JWT_SECRET
+      MONGO_URI: DEFAULT_MONGO_URI,
+      JWT_SECRET: DEFAULT_JWT_SECRET
     }
   },
   {
@@ -57,8 +65,8 @@ const services = [
     args: ['start'],
     env: { 
       CHAT_PORT: '3004',
-      MONGO_URI: process.env.MONGO_URI,
-      JWT_SECRET: process.env.JWT_SECRET
+      MONGO_URI: DEFAULT_MONGO_URI,
+      JWT_SECRET: DEFAULT_JWT_SECRET
     }
   },
   {

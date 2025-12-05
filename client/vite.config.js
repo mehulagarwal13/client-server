@@ -18,11 +18,11 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: true,
-    port: 5000,
-    strictPort: true,
+    port: 5173,
+    strictPort: false,
     allowedHosts: true,
     hmr: {
-      clientPort: 5000,
+      clientPort: 5173,
     },
     proxy: {
       "/api": {

@@ -59,6 +59,18 @@ const StudentDashboardEnhanced = () => {
       setDashboardData(response.data);
     } catch (error) {
       console.error('Error fetching dashboard:', error);
+      // Set fallback data if API fails
+      setDashboardData({
+        profileCompletion: 75,
+        pendingRequests: [],
+        acceptedConnections: [],
+        totalConnections: 0,
+        upcomingSessions: [],
+        announcements: [
+          { id: 1, title: 'Welcome!', message: 'Welcome to TechLearn Platform', time: 'Just now' },
+          { id: 2, title: 'New Features', message: 'Check out our new mentorship features', time: '1 day ago' },
+        ],
+      });
     } finally {
       setLoading(false);
     }

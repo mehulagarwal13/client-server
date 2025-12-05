@@ -31,3 +31,5 @@ console.log('1. Make sure MongoDB is running');
 console.log('2. Update .env file with your MongoDB URI if needed');
 console.log('3. Run: node start-all.js\n');
 
+
+

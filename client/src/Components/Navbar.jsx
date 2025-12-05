@@ -13,11 +13,10 @@ const Navbar = () => {
 
   const menuItems = [
     { label: "Home", href: "/" },
-    { label: "Features", href: "/#features" },
-    // Hash route so it works on Vercel static hosting
-    { label: "Community", href: "/#chatroom" },
-    { label: "About", href: "/#about" },
-    { label: "Contact", href: "/#contact" },
+    { label: "Features", href: "/features" },
+    { label: "Community", href: "/community" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
   ];
 
   useEffect(() => {
@@ -45,9 +44,12 @@ const Navbar = () => {
             <ul className="flex items-center gap-1 text-sm font-medium">
               {menuItems.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="px-3 py-2 rounded-lg text-gray-700 hover:text-indigo-600 transition">
+                  <button
+                    onClick={() => navigate(item.href)}
+                    className="px-3 py-2 rounded-lg text-gray-700 hover:text-indigo-600 transition"
+                  >
                     {item.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -116,14 +118,13 @@ const Navbar = () => {
       <div className={`md:hidden overflow-hidden transition-[max-height] duration-300 ${isOpen ? "max-h-96" : "max-h-0"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           {menuItems.map((item) => (
-            <a
+            <button
               key={item.label}
-              href={item.href}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-white/70 hover:text-indigo-600"
-              onClick={() => setIsOpen(false)}
+              onClick={() => { setIsOpen(false); navigate(item.href); }}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-white/70 hover:text-indigo-600"
             >
               {item.label}
-            </a>
+            </button>
           ))}
         </div>
         <div className="pt-4 pb-3 border-t border-gray-200 flex flex-col space-y-2 px-5">

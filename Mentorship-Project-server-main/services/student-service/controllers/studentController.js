@@ -177,6 +177,20 @@ export const forgotPassword = async (req, res) => {
 };
 
 // ----- Reset Password -----
+export const browseStudents = async (req, res) => {
+  try {
+    // Get all students (public info only, no sensitive data)
+    const students = await Student.find({})
+      .select('-password -resetPasswordToken -resetPasswordExpires')
+      .lean();
+    
+    return res.status(200).json(students);
+  } catch (error) {
+    console.error('[Browse Students] Error:', error);
+    return res.status(500).json({ msg: 'Server error', error: error.message });
+  }
+};
+
 export const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;

@@ -8,7 +8,7 @@ import studentRoutes from "./routes/studentRoutes.js";
 
 //initialize
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 //middleware
 app.use(express.json());

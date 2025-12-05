@@ -29,8 +29,16 @@ const RecruiterDashboard = () => {
       console.error('Error fetching dashboard:', error);
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
-        navigate('/recruiter-login');
+        navigate('/login');
+        return;
       }
+      // Set fallback data if API fails
+      setDashboardData({
+        pendingRequests: 0,
+        totalConnections: 0,
+        sentRequests: [],
+        acceptedConnections: [],
+      });
     } finally {
       setLoading(false);
     }

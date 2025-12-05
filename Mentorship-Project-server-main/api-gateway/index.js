@@ -134,6 +134,12 @@ app.use(
   })
 );
 
+// ---RECRUITER SERVICE PROXY (Temporary - returns empty array until recruiter service is created)---
+app.get("/api/recruiter/browse", (req, res) => {
+  // Temporary endpoint - returns empty array until recruiter service is implemented
+  res.status(200).json([]);
+});
+
 // ---MESSAGES API PROXY (for legacy endpoints)---
 app.use(
   "/api/messages",

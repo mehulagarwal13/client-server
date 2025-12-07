@@ -1,4 +1,55 @@
-# Mentorship Platform – Monorepo
+Follow these steps to run the entire project:
+
+### 🚀 Quick Start Summary
+
+# Step 1: Go to the project root
+cd CLIENT-SERVER
+
+# Step 2: Install root-level dependencies
+npm install
+
+# Step 3: Install all dependencies (frontend + backend)
+npm run install-all
+
+# Step 4: Add your .env file to the project root
+# (Place the file manually — no command for this)
+
+# Step 5: Start all services
+npm run dev
+
+# Step 6: Open the localhost URL shown in the terminal
+
+# You can go below for more info.....
+
+1. **Make sure you are in the project root folder**
+   ```bash
+   cd CLIENT-SERVER
+
+
+Install root dependencies
+
+npm install  ----->   Install all backend + frontend dependencies
+
+npm run install-all
+
+
+Add the .env file provided by the owner
+Place it inside the root folder (same level as start-all.js).
+
+Start all services
+
+npm run dev
+
+
+Open the local development URL
+Click on the localhost link displayed in the terminal (e.g. http://localhost:5173 or http://localhost:8000 depending on frontend/server).
+
+🎉 You can now Sign Up, Sign In, and use the application.
+
+DONE...
+You can follow below one for more info
+
+# Mentorship Platform - Microservices
 
 This is a full-stack mentorship platform built with:
 
@@ -41,8 +92,6 @@ Note: Given by me (Deepak Kumar)
 📦 Install Dependencies (All Services at Once)
 From the project root, run:
 
-bash
-Copy code
 npm run install-all
 This will run npm install in:
 
@@ -56,20 +105,17 @@ client
 
 If you don’t have the script yet, add this to your root package.json:
 
-json
-Copy code
 {
   "scripts": {
     "install-all": "node install-all.js",
     "dev-all": "node start-all.js"
   }
 }
+
 🚀 Running the Project
 🟢 Option 1 – Start EVERYTHING with one command
 From the project root:
 
-bash
-Copy code
 npm run dev-all
 This will:
 
@@ -83,8 +129,7 @@ Start Frontend dev server (often http://localhost:5173 or similar)
 
 You should see logs like:
 
-text
-Copy code
+
 📋 Loaded Environment Variables:
 ...
 
@@ -100,23 +145,17 @@ Copy code
 You can also run services one by one:
 
 1️⃣ API Gateway
-bash
-Copy code
 cd server/api-gateway
 npm run dev
 2️⃣ Student Service
-bash
-Copy code
 cd server/services/student-service
 npm run dev
 3️⃣ Mentor Service
-bash
-Copy code
+
 cd server/services/mentor-services
 npm run dev
 4️⃣ Frontend
-bash
-Copy code
+
 cd client
 npm run dev
 🧪 Testing
@@ -124,27 +163,21 @@ npm run dev
 
 Example:
 
-bash
-Copy code
 # Inside a service
 cd server/api-gateway
 npm test
 👥 Contributing
 Create a new branch:
 
-bash
-Copy code
+
 git checkout -b feature/your-feature-name
 Make your changes and commit:
 
-bash
-Copy code
+
 git add .
 git commit -m "Add <short description>"
 Push your branch:
 
-bash
-Copy code
 git push -u origin feature/your-feature-name
 Open a Pull Request to main.
 

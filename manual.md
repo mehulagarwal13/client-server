@@ -2,24 +2,25 @@ Follow these steps to run the entire project:
 
 ### 🚀 Quick Start Summary
 
-# Step 1: Go to the project root
+### Step 1: Go to the project root
+```bash
 cd CLIENT-SERVER
 
-# Step 2: Install root-level dependencies
+### Step 2: Install root-level dependencies
 npm install
 
-# Step 3: Install all dependencies (frontend + backend)
+### Step 3: Install all dependencies (frontend + backend)
 npm run install-all
 
-# Step 4: Add your .env file to the project root
-# (Place the file manually — no command for this)
+### Step 4: Add your .env file to the project root
+### (Place the file manually — no command for this)
 
-# Step 5: Start all services
+### Step 5: Start all services
 npm run dev
 
-# Step 6: Open the localhost URL shown in the terminal
+### Step 6: Open the localhost URL shown in the terminal
 
-# You can go below for more info.....
+### You can go below for more info.....
 
 1. **Make sure you are in the project root folder**
    ```bash

@@ -3,7 +3,6 @@ Follow these steps to run the entire project:
 ### 🚀 Quick Start Summary
 
 ### Step 1: Go to the project root
-```bash
 cd CLIENT-SERVER
 
 ### Step 2: Install root-level dependencies

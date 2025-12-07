@@ -15,12 +15,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //get info.
-app.get('/',(req,res)=>{
+app.get("/", (req, res) => {
   res.status(200).json({
     status: "We are live bidu",
-    message:"Hello",
-    time:new Date().toISOString
-  })
+    message: "Hello",
+    time: new Date().toISOString,
+  });
 });
 
 // --Request logging middleware (important for debugging)
@@ -38,7 +38,7 @@ const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log(`MongoDB Successfully Connected ✅`);
-    
+
     // Mount routes at root - API Gateway handles /api/student prefix
     app.use("/", studentRoutes);
     // Also support direct access with prefix for testing

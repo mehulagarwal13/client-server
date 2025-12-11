@@ -50,9 +50,14 @@ const Community = () => {
         axios.get(`${API_URL}/mentor/browse`, { headers }).catch(() => ({ data: [] }))
       ]);
 
-      setStudents(studentsRes.data || []);
-      setRecruiters(recruitersRes.data || []);
-      setMentors(mentorsRes.data || []);
+      // Add type field to each member for accurate labeling
+      const studentsWithType = (studentsRes.data || []).map(student => ({ ...student, memberType: 'student' }));
+      const recruitersWithType = (recruitersRes.data || []).map(recruiter => ({ ...recruiter, memberType: 'recruiter' }));
+      const mentorsWithType = (mentorsRes.data || []).map(mentor => ({ ...mentor, memberType: 'mentor' }));
+
+      setStudents(studentsWithType);
+      setRecruiters(recruitersWithType);
+      setMentors(mentorsWithType);
     } catch (error) {
       console.error('Error fetching community:', error);
     } finally {
@@ -63,7 +68,8 @@ const Community = () => {
   const filteredStudents = students.filter((student) => {
     const matchesSearch = student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                         student.education?.institution?.toLowerCase().includes(searchTerm.toLowerCase());
+                         student.university?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         student.course?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSkill = !skillFilter || student.skills?.some(skill => 
       skill.toLowerCase().includes(skillFilter.toLowerCase())
     );
@@ -79,29 +85,79 @@ const Community = () => {
 
   const filteredMentors = mentors.filter((mentor) => {
     return mentor.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           mentor.areaOfExpertise?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           mentor.company?.toLowerCase().includes(searchTerm.toLowerCase());
+           mentor.expertise?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           mentor.currentCompany?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           mentor.currentJobTitle?.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const getDisplayItems = () => {
     switch (selectedFilter) {
       case 'students':
-        return filteredStudents;
+        return filteredStudents.map(item => ({ ...item, memberType: item.memberType || 'student' }));
       case 'recruiters':
-        return filteredRecruiters;
+        return filteredRecruiters.map(item => ({ ...item, memberType: item.memberType || 'recruiter' }));
       case 'mentors':
-        return filteredMentors;
+        return filteredMentors.map(item => ({ ...item, memberType: item.memberType || 'mentor' }));
       default:
-        return [...filteredStudents, ...filteredRecruiters, ...filteredMentors];
+        // Combine all and ensure memberType is preserved
+        return [
+          ...filteredStudents.map(item => ({ ...item, memberType: item.memberType || 'student' })),
+          ...filteredRecruiters.map(item => ({ ...item, memberType: item.memberType || 'recruiter' })),
+          ...filteredMentors.map(item => ({ ...item, memberType: item.memberType || 'mentor' }))
+        ];
     }
   };
 
   const displayItems = getDisplayItems();
 
   const getItemType = (item) => {
-    if (item.skills !== undefined && item.education !== undefined) return 'student';
-    if (item.companyName !== undefined) return 'recruiter';
-    return 'mentor';
+    // ALWAYS use memberType if available (most accurate - set when fetching from specific endpoints)
+    // This is the primary source of truth
+    if (item.memberType && ['student', 'mentor', 'recruiter'].includes(item.memberType)) {
+      return item.memberType;
+    }
+    
+    // Fallback detection based on actual model fields
+    // Key differences:
+    // Students: skills (array), mentorshipArea (string), currentStatus, graduationYear (string)
+    // Mentors: expertise, currentJobTitle, currentCompany, yearsOfExperience, mentorshipAreas (array), hourlyRate, passingYear (number)
+    // Recruiters: companyName
+    
+    // Check for recruiter first (most distinct)
+    if (item.companyName !== undefined && item.companyName !== '') {
+      return 'recruiter';
+    }
+    
+    // Check for mentor-specific fields FIRST (these are unique to mentors)
+    const hasMentorSpecificFields = 
+      (item.expertise !== undefined && item.expertise !== '') ||
+      (item.currentJobTitle !== undefined && item.currentJobTitle !== '') ||
+      (item.currentCompany !== undefined && item.currentCompany !== '') ||
+      (item.yearsOfExperience !== undefined && item.yearsOfExperience > 0) ||
+      (item.hourlyRate !== undefined && item.hourlyRate !== '') ||
+      (item.mentorshipAreas !== undefined && Array.isArray(item.mentorshipAreas) && item.mentorshipAreas.length > 0) ||
+      (item.passingYear !== undefined && typeof item.passingYear === 'number');
+    
+    // Check for student-specific fields (these are unique to students)
+    const hasStudentSpecificFields = 
+      (item.skills !== undefined && Array.isArray(item.skills) && item.skills.length > 0) ||
+      (item.mentorshipArea !== undefined && typeof item.mentorshipArea === 'string' && item.mentorshipArea !== '') ||
+      (item.currentStatus !== undefined && item.currentStatus !== '') ||
+      (item.graduationYear !== undefined && typeof item.graduationYear === 'string' && item.graduationYear !== '');
+    
+    // Prioritize mentor fields if present
+    if (hasMentorSpecificFields) {
+      return 'mentor';
+    }
+    
+    // Then check student fields
+    if (hasStudentSpecificFields) {
+      return 'student';
+    }
+    
+    // If we can't determine, default based on which array it came from
+    // This shouldn't happen if memberType is set, but as a last resort:
+    return 'student'; // Default fallback
   };
 
   const handleMessageClick = (item) => {
@@ -268,6 +324,18 @@ const Community = () => {
         {displayItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayItems.map((item, index) => {
+              // Ensure memberType is set if missing
+              if (!item.memberType) {
+                // Try to determine from which array it came from
+                if (filteredStudents.some(s => s._id === item._id)) {
+                  item.memberType = 'student';
+                } else if (filteredMentors.some(m => m._id === item._id)) {
+                  item.memberType = 'mentor';
+                } else if (filteredRecruiters.some(r => r._id === item._id)) {
+                  item.memberType = 'recruiter';
+                }
+              }
+              
               const type = getItemType(item);
               const isStudent = type === 'student';
               const isRecruiter = type === 'recruiter';
@@ -296,14 +364,24 @@ const Community = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-1">
                       {item.fullName || item.companyName}
                     </h3>
-                    {isStudent && item.education?.institution && (
-                      <p className="text-sm text-gray-600 mb-2">{item.education.institution}</p>
+                    {isStudent && (item.university || item.course) && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        {item.university && item.course 
+                          ? `${item.course} at ${item.university}`
+                          : item.university || item.course || 'Student'
+                        }
+                      </p>
                     )}
                     {isRecruiter && item.companyName && (
                       <p className="text-sm text-gray-600 mb-2">{item.designation || 'Recruiter'}</p>
                     )}
-                    {isMentor && item.company && (
-                      <p className="text-sm text-gray-600 mb-2">{item.company}</p>
+                    {isMentor && (item.currentCompany || item.currentJobTitle) && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        {item.currentJobTitle && item.currentCompany
+                          ? `${item.currentJobTitle} at ${item.currentCompany}`
+                          : item.currentJobTitle || item.currentCompany || 'Mentor'
+                        }
+                      </p>
                     )}
                     {item.location && (
                       <div className="flex items-center justify-center gap-1 text-gray-500 text-xs mb-3">
@@ -350,13 +428,20 @@ const Community = () => {
                     </div>
                   )}
 
-                  {isMentor && item.areaOfExpertise && (
+                  {isMentor && (item.expertise || item.mentorshipAreas) && (
                     <div className="mb-4">
                       <p className="text-xs text-gray-500 mb-2 text-center">Expertise:</p>
-                      <div className="text-center">
-                        <span className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-medium">
-                          {item.areaOfExpertise}
-                        </span>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {item.expertise && (
+                          <span className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-medium">
+                            {item.expertise}
+                          </span>
+                        )}
+                        {item.mentorshipAreas && Array.isArray(item.mentorshipAreas) && item.mentorshipAreas.slice(0, 2).map((area, idx) => (
+                          <span key={idx} className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-medium">
+                            {area}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -368,15 +453,32 @@ const Community = () => {
                     </p>
                   )}
 
-                  {/* Type Badge */}
-                  <div className={`text-center px-4 py-2 rounded-xl text-sm font-semibold ${
-                    isStudent
-                      ? 'bg-blue-50 text-blue-600'
-                      : isRecruiter
-                      ? 'bg-purple-50 text-purple-600'
-                      : 'bg-green-50 text-green-600'
-                  }`}>
-                    {isStudent ? 'Student' : isRecruiter ? 'Recruiter' : 'Mentor'}
+                  {/* Type Badge - More Prominent */}
+                  <div className="mb-4">
+                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-sm ${
+                      isStudent
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white'
+                        : isRecruiter
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                    }`}>
+                      {isStudent ? (
+                        <>
+                          <GraduationCap className="w-4 h-4" />
+                          <span>Student</span>
+                        </>
+                      ) : isRecruiter ? (
+                        <>
+                          <Briefcase className="w-4 h-4" />
+                          <span>Recruiter</span>
+                        </>
+                      ) : (
+                        <>
+                          <Award className="w-4 h-4" />
+                          <span>Mentor</span>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   {/* Actions */}

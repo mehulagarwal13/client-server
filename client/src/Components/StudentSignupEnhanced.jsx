@@ -172,7 +172,13 @@ const StudentSignupEnhanced = () => {
       });
 
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      // Save user data including skills and mentorshipArea for mentor recommendations
+      const userData = {
+        ...response.data.user,
+        skills: formData.skills,
+        mentorshipArea: formData.mentorshipArea
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('role', 'student');
 
       setSuccessMessage('Account created successfully! Redirecting...');

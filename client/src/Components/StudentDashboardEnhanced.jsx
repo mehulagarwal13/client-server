@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   User, MessageCircle, UserCheck, X, CheckCircle, TrendingUp, Bell,
   Briefcase, GraduationCap, FileText, LogOut, Settings, Users, Calendar,
-  BookOpen, Target, Clock, Award, ChevronRight, Play, MessageSquare, Flame
+  BookOpen, Target, Clock, Award, ChevronRight, Play, MessageSquare, Flame, Star
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -41,9 +41,12 @@ const StudentDashboardEnhanced = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('Student');
+  const [recommendedMentors, setRecommendedMentors] = useState([]);
+  const [mentorsLoading, setMentorsLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
+    fetchRecommendedMentors();
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user.fullName || user.email) {
       setUserName(user.fullName || user.email.split('@')[0]);
@@ -73,6 +76,91 @@ const StudentDashboardEnhanced = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRecommendedMentors = async () => {
+    try {
+      setMentorsLoading(true);
+      
+      // Get student data from localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const studentSkills = user.skills || [];
+      const studentMentorshipArea = user.mentorshipArea || '';
+
+      // Fetch all mentors from API
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const mentorsResponse = await axios.get(`${API_URL}/mentor/browse`, { headers });
+      const allMentors = mentorsResponse.data || [];
+
+      // Calculate relevance score for each mentor based on student's field
+      const mentorsWithScore = allMentors.map(mentor => {
+        let score = 0;
+        
+        // Check mentorship area match (highest priority)
+        if (studentMentorshipArea && mentor.mentorshipAreas) {
+          const areas = Array.isArray(mentor.mentorshipAreas) 
+            ? mentor.mentorshipAreas 
+            : [mentor.mentorshipAreas];
+          if (areas.some(area => {
+            const areaStr = typeof area === 'string' ? area : String(area);
+            return areaStr.toLowerCase().includes(studentMentorshipArea.toLowerCase());
+          })) {
+            score += 5; // High score for mentorship area match
+          }
+        }
+        
+        // Check expertise match
+        if (mentor.expertise) {
+          const expertiseStr = typeof mentor.expertise === 'string' 
+            ? mentor.expertise 
+            : String(mentor.expertise);
+          
+          if (studentMentorshipArea && expertiseStr.toLowerCase().includes(studentMentorshipArea.toLowerCase())) {
+            score += 3;
+          }
+          
+          // Check if any student skill matches mentor expertise
+          studentSkills.forEach(skill => {
+            if (expertiseStr.toLowerCase().includes(skill.toLowerCase())) {
+              score += 2;
+            }
+          });
+        }
+        
+        // Check mentorship areas for skill matches
+        if (mentor.mentorshipAreas) {
+          const areas = Array.isArray(mentor.mentorshipAreas) 
+            ? mentor.mentorshipAreas 
+            : [mentor.mentorshipAreas];
+          areas.forEach(area => {
+            const areaStr = typeof area === 'string' ? area : String(area);
+            studentSkills.forEach(skill => {
+              if (areaStr.toLowerCase().includes(skill.toLowerCase())) {
+                score += 1;
+              }
+            });
+          });
+        }
+        
+        return {
+          ...mentor,
+          relevanceScore: score
+        };
+      });
+
+      // Sort by relevance score (highest first) and filter out zero scores
+      mentorsWithScore.sort((a, b) => b.relevanceScore - a.relevanceScore);
+      const topMentors = mentorsWithScore.filter(m => m.relevanceScore > 0);
+      
+      // If we have matches, show top 6. Otherwise show first 6 mentors
+      setRecommendedMentors(topMentors.length > 0 ? topMentors.slice(0, 6) : mentorsWithScore.slice(0, 6));
+    } catch (error) {
+      console.error('Error fetching recommended mentors:', error);
+      setRecommendedMentors([]);
+    } finally {
+      setMentorsLoading(false);
     }
   };
 
@@ -335,11 +423,48 @@ const StudentDashboardEnhanced = () => {
           </motion.div>
         </div>
 
-        {dashboardData?.pendingRequests?.length > 0 && (
+        {/* Recommended Mentors Section */}
+        {recommendedMentors.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
+            className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 mb-6"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Users size={24} /> Recommended Mentors for You
+              </h2>
+              <button
+                onClick={() => navigate('/student-browse')}
+                className="text-purple-400 hover:text-purple-300 text-sm flex items-center gap-1"
+              >
+                View All <ChevronRight size={16} />
+              </button>
+            </div>
+            {mentorsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full"
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recommendedMentors.map((mentor, index) => (
+                  <MentorCard key={mentor._id || index} mentor={mentor} navigate={navigate} />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {dashboardData?.pendingRequests?.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
             className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
           >
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -407,5 +532,99 @@ const ChatPreview = ({ name, message, time }) => (
     </div>
   </div>
 );
+
+const MentorCard = ({ mentor, navigate }) => {
+  const getInitials = (name) => {
+    if (!name) return 'M';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  };
+
+  const expertise = mentor.expertise || '';
+  const mentorshipAreas = Array.isArray(mentor.mentorshipAreas) 
+    ? mentor.mentorshipAreas 
+    : (mentor.mentorshipAreas ? [mentor.mentorshipAreas] : []);
+  const displayAreas = mentorshipAreas.length > 0 ? mentorshipAreas : (expertise ? [expertise] : []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="bg-white/5 rounded-2xl p-4 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
+      onClick={() => navigate(`/messages/${mentor._id}`)}
+    >
+      <div className="flex items-start gap-3 mb-3">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0">
+          {getInitials(mentor.fullName)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-white font-semibold text-sm truncate group-hover:text-purple-300 transition-colors">
+            {mentor.fullName || mentor.email?.split('@')[0] || 'Mentor'}
+          </h3>
+          {mentor.currentJobTitle && (
+            <p className="text-white/60 text-xs truncate">{mentor.currentJobTitle}</p>
+          )}
+          {mentor.currentCompany && (
+            <p className="text-white/50 text-xs truncate">{mentor.currentCompany}</p>
+          )}
+        </div>
+      </div>
+      
+      {expertise && (
+        <div className="mb-2">
+          <p className="text-white/80 text-xs font-medium mb-1">Expertise:</p>
+          <p className="text-white/70 text-xs line-clamp-2">{expertise}</p>
+        </div>
+      )}
+
+      {displayAreas.length > 0 && (
+        <div className="mb-3">
+          <div className="flex flex-wrap gap-1">
+            {displayAreas.slice(0, 2).map((area, idx) => (
+              <span
+                key={idx}
+                className="px-2 py-0.5 rounded-lg bg-purple-500/20 text-purple-300 text-xs"
+              >
+                {typeof area === 'string' ? area : String(area)}
+              </span>
+            ))}
+            {displayAreas.length > 2 && (
+              <span className="px-2 py-0.5 rounded-lg bg-white/10 text-white/60 text-xs">
+                +{displayAreas.length - 2}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {mentor.yearsOfExperience > 0 && (
+        <div className="flex items-center gap-2 mb-3">
+          <Award className="text-yellow-400" size={14} />
+          <span className="text-white/60 text-xs">{mentor.yearsOfExperience} years experience</span>
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/messages/${mentor._id}`);
+          }}
+          className="flex-1 px-3 py-2 rounded-lg bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 transition-all text-sm flex items-center justify-center gap-1"
+        >
+          <MessageCircle size={14} /> Message
+        </button>
+        {mentor.relevanceScore > 0 && (
+          <div className="px-2 py-2 rounded-lg bg-green-500/20 text-green-300 text-xs flex items-center gap-1">
+            <Star size={14} fill="currentColor" /> {mentor.relevanceScore}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
 
 export default StudentDashboardEnhanced;

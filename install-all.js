@@ -11,6 +11,7 @@ const folders = [
   path.join(__dirname, "server", "api-gateway"),
   path.join(__dirname, "server", "services", "student-service"),
   path.join(__dirname, "server", "services", "mentor-services"),
+  path.join(__dirname, "server", "services", "chat-service"),
   path.join(__dirname, "client"),
 ];
 

@@ -20,3 +20,5 @@ coverage/
 .idea/
 .vscode/
 *.iml
+*.md 
+

@@ -12,12 +12,12 @@ const PORT = process.env.PORT || 3001;
 
 //middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));  //parse urlencoded form data and populate to req.body. Setting true allows paring of nested objects 
 
 //get info.
 app.get("/", (req, res) => {
   res.status(200).json({
-    status: "We are live bidu",
+    status: "We are live",
     message: "Hello",
     time: new Date().toISOString,
   });

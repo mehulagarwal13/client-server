@@ -4,166 +4,96 @@ import dotenv from "dotenv";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 dotenv.config();
-
 const app = express();
 
-// CORS configuration for Replit and local development
+// ✅ CORS configuration
 const ALLOWED_ORIGINS = [
   "https://client-944o.vercel.app",
   "http://localhost:5173",
+  "http://localhost:5174",
   "http://localhost:5000",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || (origin && origin.includes('.replit.dev'))) {
+      if (
+        !origin ||
+        ALLOWED_ORIGINS.includes(origin) ||
+        origin.includes(".replit.dev")
+      ) {
         callback(null, true);
-      } else if (!origin) {
-        callback(null, false);
       } else {
-        console.warn(`[Gateway] Blocked CORS request from unauthorized origin: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
+        console.warn(`[Gateway] Blocked CORS request from: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
   })
 );
 
-// 2. GET / FIX: Simple health check for the root path
+// Health check
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "Gateway Service Operational",
-    message: "Access proxy routes at /api/gateway",
     time: new Date().toISOString(),
   });
 });
 
-// Health check route (optional)
-app.get("/api/ping", express.json(), (req, res) => {
-  res.send("Gateway is live ");
+app.get("/api/ping", (req, res) => {
+  res.send("Gateway is live");
 });
 
-// Log incoming requests (for debugging)
+// Logger
 app.use((req, res, next) => {
   console.log(`[Gateway] ${req.method} ${req.originalUrl}`);
   next();
 });
 
-// ---STUDENT SERVICE PROXY---
-app.use(
-  "/api/student",
+// Proxy helper
+const createServiceProxy = (target, serviceName, ws = false) =>
   createProxyMiddleware({
-    target: "http://localhost:3001",
+    target,
     changeOrigin: true,
     timeout: 15000,
     proxyTimeout: 15000,
+    ws,
+    cookieDomainRewrite: "",
     onError: (err, req, res) => {
-      console.error(`[Gateway] Student Service proxy error:`, err);
+      console.error(`[Gateway] ${serviceName} proxy error:`, err.message);
       if (!res.headersSent) {
         res.status(502).json({
           error: "Gateway proxy error",
+          service: serviceName,
           message: err.message,
-          details: "Cannot connect to student service on port 3001",
         });
       }
     },
-  })
-);
+  });
 
-// ---AUTH SERVICE PROXY---
-app.use(
-  "/api/auth",
-  createProxyMiddleware({
-    target: "http://localhost:3002",
-    changeOrigin: true,
-    timeout: 15000,
-    proxyTimeout: 15000,
-    onError: (err, req, res) => {
-      console.error(`[Gateway] Auth Service proxy error:`, err);
-      if (!res.headersSent) {
-        res.status(502).json({
-          error: "Gateway proxy error",
-          message: err.message,
-          details: "Cannot connect to auth service on port 3002",
-        });
-      }
-    },
-  })
-);
+app.use("/api/student", createServiceProxy("http://localhost:3001", "Student"));
+app.use("/api/auth", createServiceProxy("http://localhost:3002", "Auth"));
+app.use("/api/mentor", createServiceProxy("http://localhost:3003", "Mentor"));
+app.use("/api/chat", createServiceProxy("http://localhost:3004", "Chat", true));
 
-// ---MENTOR SERVICE PROXY---
-app.use(
-  "/api/mentor",
-  createProxyMiddleware({
-    target: "http://localhost:3003",
-    changeOrigin: true,
-    timeout: 15000,
-    proxyTimeout: 15000,
-    onError: (err, req, res) => {
-      console.error(`[Gateway] Mentor Service proxy error:`, err);
-      if (!res.headersSent) {
-        res.status(502).json({
-          error: "Gateway proxy error",
-          message: err.message,
-          details: "Cannot connect to mentor service on port 3003",
-        });
-      }
-    },
-  })
-);
-
-// ---CHAT SERVICE PROXY---
-app.use(
-  "/api/chat",
-  createProxyMiddleware({
-    target: "http://localhost:3004",
-    changeOrigin: true,
-    timeout: 15000,
-    proxyTimeout: 15000,
-    onError: (err, req, res) => {
-      console.error(`[Gateway] Chat Service proxy error:`, err);
-      if (!res.headersSent) {
-        res.status(502).json({
-          error: "Gateway proxy error",
-          message: err.message,
-          details: "Cannot connect to chat service on port 3004",
-        });
-      }
-    },
-  })
-);
-
-// ---RECRUITER SERVICE PROXY (Temporary - returns empty array until recruiter service is created)---
+// Temporary recruiter route
 app.get("/api/recruiter/browse", (req, res) => {
-  // Temporary endpoint - returns empty array until recruiter service is implemented
   res.status(200).json([]);
 });
 
-// ---MESSAGES API PROXY (for legacy endpoints)---
+// Legacy messages support
 app.use(
   "/api/messages",
   createProxyMiddleware({
     target: "http://localhost:3004",
     changeOrigin: true,
-    pathRewrite: { '^/api/messages': '/api/chat' },
-    timeout: 15000,
-    proxyTimeout: 15000,
-    onError: (err, req, res) => {
-      console.error(`[Gateway] Messages proxy error:`, err);
-      if (!res.headersSent) {
-        res.status(502).json({
-          error: "Gateway proxy error",
-          message: err.message,
-          details: "Cannot connect to chat service on port 3004",
-        });
-      }
-    },
+    pathRewrite: { "^/api/messages": "/api/chat" },
+    ws: true,
+    cookieDomainRewrite: "",
   })
 );
 
-// Start Gateway
-const PORT = process.env.PORT || 8000;
+const PORT = 8000;
 app.listen(PORT, () => {
-  console.log(`API Gateway running on port ${PORT}`);
+  console.log(`🚀 API Gateway running on port ${PORT}`);
 });

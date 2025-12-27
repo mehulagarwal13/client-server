@@ -57,6 +57,19 @@ const services = [
     },
   },
   {
+    name: "Chat Service",
+    cwd: path.join(__dirname, "server", "services", "chat-service"),
+    command: "npm",
+    args: ["run", "dev"],
+    env: {
+      PORT: process.env.PORT_CHAT,
+      MONGO_URI: process.env.MONGO_URI,
+      JWT_SECRET: process.env.JWT_SECRET,
+      EMAIL_USER: process.env.EMAIL_USER,
+      EMAIL_PASS: process.env.EMAIL_PASS,
+    },
+  },
+  {
     name: "Frontend",
     cwd: path.join(__dirname, "client"),
     command: "npm",
